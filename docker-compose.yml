@@ -1,0 +1,24 @@
+services:
+  backend:
+    build: ./backEnd
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+    env_file:
+      - ./backEnd/.env
+    
+    networks:
+      - app-network
+  frontend:
+    build: ./front
+    ports:
+      - "8080:80" 
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "start": "docker-compose up --build",
+    "dev": "concurrently \"npm run dev --prefix backEnd\" \"npm run dev --prefix front\"",
+    "install:all": "npm install && npm install --prefix backEnd && npm install --prefix front"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "concurrently": "^8.2.2"
+  }
+}
