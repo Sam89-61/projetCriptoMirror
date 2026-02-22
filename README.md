@@ -48,6 +48,7 @@ Le projet est un monorepo composé de :
     ```env
     APIKeyGroq=votre_cle_api_groq_ici
     ```
+   Si vous en avez pas, générez-en une ici : https://console.groq.com/keys
 
 3.  Lancez l'application :
     ```bash
