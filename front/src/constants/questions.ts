@@ -1,7 +1,7 @@
 export const MAX_BRUT = {
   'Mot de passe': 40,
-  'Navigation': 38,
-  'Email': 28,
+  'Navigation': 40,
+  'Email': 30,
   'Réseaux sociaux': 20
 } as const;
 
