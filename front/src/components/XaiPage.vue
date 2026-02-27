@@ -341,11 +341,12 @@ function st(index: number): ProfilState {
 }
 
 function getSections(text: string) {
+  const clean = (s: string) => s.trim().replace(/Accroche\s*:\s*/gi, '')
   const parts = text.split('---SECTION---')
   return {
-    analyse: parts[0]?.trim() ?? '',
-    conseils: parts[1]?.trim() ?? '',
-    conclusion: parts[2]?.trim() ?? '',
+    analyse: clean(parts[0] ?? ''),
+    conseils: clean(parts[1] ?? ''),
+    conclusion: clean(parts[2] ?? ''),
   }
 }
 

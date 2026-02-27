@@ -40,7 +40,7 @@ Ta réponse DOIT contenir exactement 3 sections séparées par le délimiteur --
 Écris en texte brut uniquement. Pas de Markdown (pas de #, ##, ###, **, *, blocs de code, tableaux Markdown, etc.).
 
 SECTION 1 — Accroche + Analyse :
-- Commence par une phrase d'accroche.
+- Commence par une phrase d'accroche encourageantmais réaliste.
 - Puis un court paragraphe résumant les points forts et les points faibles.
 
 ---SECTION---

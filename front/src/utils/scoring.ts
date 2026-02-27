@@ -32,7 +32,7 @@ export function niveauClass(score: number, max: number): string {
 }
 
 export function cleanMarkdown(text: string): string {
-  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s?/g, '');
+  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s?/g, '').replace(/Accroche\s*:\s*/gi, '');
 }
 
 export function parseAiSections(aiResponse: string) {
