@@ -341,7 +341,8 @@ function st(index: number): ProfilState {
 }
 
 function getSections(text: string) {
-  const clean = (s: string) => s.trim().replace(/Accroche\s*:\s*/gi, '')
+   
+  const clean = (s: string) => s.trim().replace(/Accroche\s*:\s*/gi, '').replace(/\*\*/g, '')
   const parts = text.split('---SECTION---')
   return {
     analyse: clean(parts[0] ?? ''),

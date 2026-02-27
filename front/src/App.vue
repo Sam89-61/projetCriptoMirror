@@ -68,7 +68,7 @@ async function terminer() {
   const reponses_a_risque = allQuestions
     .map((q, i) => {
       const points = userAnswers.value[i];
-      if (points === null || points === undefined || points < 5) return null;
+      if (points === null || points === undefined || points < 1) return null;
       const reponseChoisie = Object.entries(q.choix).find(([, v]) => v === points);
       return {
         theme: q.theme,
