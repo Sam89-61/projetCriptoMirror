@@ -120,65 +120,116 @@ Le questionnaire comporte **13 questions** réparties en **4 thématiques** de c
 
 ## 3. Méthodologie de Calcul des Scores
 
-Le calcul se déroule en trois étapes successives, intégralement déterministes et reproductibles.
+### 3.1 Principe général — Le score de risque inversé
 
-### Étape 1 — Score brut par thématique
+Cyber Mirror utilise un **score de risque inversé** : contrairement à un score classique où un chiffre élevé est positif, ici **un score bas signifie une bonne cybersécurité**.
 
-Pour chaque thématique, on additionne les points des réponses sélectionnées par l'utilisateur :
+- **Score = 0** → comportement exemplaire dans ce domaine, aucun risque détecté.
+- **Score = max** → comportement le plus risqué possible dans ce domaine.
+
+Ce choix de conception est intentionnel : il permet d'assimiler le score à un **niveau de danger** plutôt qu'à une note scolaire, ce qui facilite la compréhension intuitive par l'utilisateur ("mon score de risque est faible = je suis bien protégé").
+
+Le score global s'étend de **0 à 100**, où 100 représente le pire profil théorique possible.
+
+---
+
+### 3.2 Étape 1 — Calcul du score brut par thématique
+
+Pour chaque thématique, on additionne les points associés à chaque réponse choisie par l'utilisateur :
 
 ```
-Score_brut(thème) = Σ points de chaque réponse choisie dans le thème
+Score_brut(thème) = Σ points(réponse choisie)  pour toutes les questions du thème
 ```
 
-| Thématique | Score brut max |
-|------------|---------------|
-| Mots de passe | 40 pts |
-| Navigation web | 40 pts |
-| Email / Phishing | 30 pts |
-| Réseaux sociaux | 20 pts |
+Chaque question propose 4 réponses avec des valeurs de risque croissantes. La réponse la plus prudente vaut **0 point**, la plus risquée vaut **10 points** (sauf quelques réponses intermédiaires à 3, 4, 7, 8 points selon la nuance du comportement).
 
-### Étape 2 — Normalisation par pondération
+Les maximums bruts par thème, correspondant à toutes les pires réponses cochées :
 
-Pour rendre les scores comparables sur une même échelle tout en respectant l'importance relative de chaque domaine, chaque score brut est **normalisé** selon la formule suivante :
+| Thématique | Nb questions | Score brut max |
+|------------|:---:|:---:|
+| Mots de passe | 4 | 40 pts |
+| Navigation web | 4 | 40 pts |
+| Email / Phishing | 3 | 30 pts |
+| Réseaux sociaux | 2 | 20 pts |
+
+---
+
+### 3.3 Étape 2 — Normalisation par pondération
+
+Les quatre thématiques n'ont pas le même poids brut (40, 40, 30, 20 pts) et n'ont pas non plus la même importance stratégique en cybersécurité. Pour obtenir un score global sur 100 qui reflète ces priorités, chaque score brut est **normalisé** par un poids prédéfini :
 
 ```
 Score_normalisé(thème) = (Score_brut / Max_brut) × Poids_thème
 ```
 
-Les **poids** reflètent l'importance stratégique de chaque domaine en cybersécurité :
+| Thématique | Max brut | Poids | Score normalisé max | Justification du poids |
+|------------|:---:|:---:|:---:|---|
+| Mots de passe | 40 | **40** | 40 / 100 | Premier vecteur d'intrusion : un mot de passe compromis expose tous les comptes |
+| Navigation web | 40 | **30** | 30 / 100 | Risques élevés (malwares, HTTPS, cookies) mais partiellement atténués par le navigateur |
+| Email / Phishing | 30 | **20** | 20 / 100 | Vecteur d'attaque majeur mais plus ciblé ; la vigilance seule suffit souvent |
+| Réseaux sociaux | 20 | **10** | 10 / 100 | Risque important pour la vie privée mais impact direct sur la sécurité plus limité |
+| **Total** | | **100** | **100 / 100** | |
 
-| Thématique | Max brut | Poids | Score normalisé max |
-|------------|----------|-------|---------------------|
-| Mots de passe | 40 pts | 40 | **40 / 100** |
-| Navigation web | 40 pts | 30 | **30 / 100** |
-| Email / Phishing | 30 pts | 20 | **20 / 100** |
-| Réseaux sociaux | 20 pts | 10 | **10 / 100** |
+Cette pondération garantit que la somme des quatre scores normalisés maximaux donne exactement 100, quelle que soit la combinaison de réponses.
 
-### Étape 3 — Score global
+---
+
+### 3.4 Étape 3 — Score global
 
 Le score global est la somme des quatre scores normalisés :
 
 ```
-Score_global = Σ Score_normalisé(thème)   →   plage : [0 ; 100]
+Score_global = Score_normalisé(MDP) + Score_normalisé(Nav) + Score_normalisé(Email) + Score_normalisé(RS)
+Plage résultante : [0 ; 100]
 ```
 
-### Niveaux de risque
+---
 
-| Ratio (score / max thème) | Niveau | Couleur |
-|---------------------------|--------|---------|
+### 3.5 Niveaux de risque
+
+Le niveau de risque est déterminé **par thème** (pour le radar) et **globalement** (pour le profil général), en fonction du ratio score / max :
+
+| Ratio (score normalisé / poids max) | Niveau | Couleur affichée |
+|:---:|:---:|:---:|
 | ≤ 30 % | Faible | Vert |
 | 31 % – 60 % | Modéré | Orange |
 | > 60 % | Élevé | Rouge |
 
-**Exemple de calcul — Profil Intermédiaire :**
+Exemple : un score Navigation de 18/30 représente un ratio de 60 % → seuil **Modéré**. Un score de 19/30 (63 %) bascule en **Élevé**.
 
-| Thème | Score brut | Normalisation | Score normalisé |
-|-------|-----------|---------------|-----------------|
-| Mots de passe | 20 / 40 | (20/40) × 40 | **20.0** |
-| Navigation | 21 / 40 | (21/40) × 30 | **15.8** |
-| Email | 7 / 30 | (7/30) × 20 | **4.7** |
-| Réseaux sociaux | 8 / 20 | (8/20) × 10 | **4.0** |
-| **TOTAL** | | | **44.5 ≈ 44 / 100** |
+---
+
+### 3.6 Exemples de calcul complets
+
+#### Profil Imprudent — toutes les pires réponses
+
+| Thème | Réponses choisies (points) | Score brut | Normalisation | Score normalisé |
+|-------|---------------------------|:---:|:---:|:---:|
+| Mots de passe | Simple (10) + Notes (10) + Jamais 2FA (10) + Jamais changé (10) | 40 / 40 | (40/40) × 40 | **40.0** |
+| Navigation | Jamais HTTPS (10) + Non bloqueur (10) + Tout accepter (10) + Jamais MAJ (10) | 40 / 40 | (40/40) × 30 | **30.0** |
+| Email | Répondre (10) + Non phishing (10) + Souvent PJ (10) | 30 / 30 | (30/30) × 20 | **20.0** |
+| Réseaux sociaux | Ne fait pas attention (10) + Jamais confidentialité (10) | 20 / 20 | (20/20) × 10 | **10.0** |
+| **TOTAL** | | | | **100 / 100 — Élevé** |
+
+#### Profil Intermédiaire — comportements mixtes
+
+| Thème | Réponses choisies (points) | Score brut | Normalisation | Score normalisé |
+|-------|---------------------------|:---:|:---:|:---:|
+| Mots de passe | Variations (5) + Mémorisation (4) + Rarement 2FA (7) + Une fois/an (4) | 20 / 40 | (20/40) × 40 | **20.0** |
+| Navigation | Rarement HTTPS (7) + Parfois bloqueur (4) + Tout accepter (10) + Manuellement MAJ (0) | 21 / 40 | (21/40) × 30 | **15.8** |
+| Email | Ignorer (3) + Pas toujours phishing (4) + Après vérif PJ (0) | 7 / 30 | (7/30) × 20 | **4.7** |
+| Réseaux sociaux | Parfois partage (4) + Parfois confidentialité (4) | 8 / 20 | (8/20) × 10 | **4.0** |
+| **TOTAL** | | | | **44.5 ≈ 44 / 100 — Modéré** |
+
+#### Profil Expert — meilleures pratiques
+
+| Thème | Réponses choisies (points) | Score brut | Normalisation | Score normalisé |
+|-------|---------------------------|:---:|:---:|:---:|
+| Mots de passe | Unique (0) + Gestionnaire (0) + Toujours 2FA (0) + Tous les 3 mois (0) | 0 / 40 | (0/40) × 40 | **0.0** |
+| Navigation | Toujours HTTPS (0) + Toujours bloqueur (0) + Manuellement MAJ (3) + Cookies nécessaires (0) | 3 / 40 | (3/40) × 30 | **2.3** |
+| Email | Vérification (0) + Facilement phishing (0) + Jamais PJ (0) | 0 / 30 | (0/30) × 20 | **0.0** |
+| Réseaux sociaux | Rarement partage (0) + Parfois confidentialité (4) | 4 / 20 | (4/20) × 10 | **2.0** |
+| **TOTAL** | | | | **4.3 ≈ 4 / 100 — Faible** |
 
 ---
 
