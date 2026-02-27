@@ -86,8 +86,8 @@ export const allQuestions: QuestionType[] = [
     choix: {
       "Personnalisation": 0,
       "Cookies nécessaires": 2,
-      "Tout accepter": 7,
-      "Ne sait pas": 8
+      "Tout accepter": 10,
+      "Ne sait pas": 7
     },
     theme: "Navigation"
   },
@@ -106,8 +106,8 @@ export const allQuestions: QuestionType[] = [
     choix: {
       "Oui, facilement": 0,
       "Oui, mais pas toujours": 4,
-      "Non": 8,
-      "Incertain": 6
+      "Non":10,
+      "Incertain": 7
     },
     theme: "Email"
   },
